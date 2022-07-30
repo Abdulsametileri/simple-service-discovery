@@ -1,30 +1,28 @@
 package main
 
 import (
-	"github.com/docker/docker/client"
 	"log"
 	"net/http"
-	"time"
 )
 
 func main() {
 	registry := ServiceRegistry{}
 	registry.Init()
 
-	dockerCLI, err := client.NewClientWithOpts()
+	dockerClient, err := NewDockerClient()
 	if err != nil {
 		panic(err)
 	}
 
-	registrar := Registrar{
-		Interval:  3 * time.Second,
-		SRegistry: &registry,
-		DockerCLI: dockerCLI,
+	registrar := Registrar{SRegistry: &registry, DockerClient: dockerClient}
+
+	if err = registrar.Init(); err != nil {
+		panic(err)
 	}
 	go registrar.Observe()
 
 	app := Application{SRegistry: &registry}
-	http.HandleFunc("/", app.Handle)
+	http.HandleFunc("/reverse-proxy", app.Handle)
 
 	log.Fatalln(http.ListenAndServe(":3000", nil))
 }
