@@ -22,7 +22,6 @@ func (a *Application) Handle(w http.ResponseWriter, r *http.Request) {
 	backendIndex := int(atomic.LoadUint64(&a.RequestCount) % uint64(a.SRegistry.Len()))
 	fmt.Printf("Request routing to instance %d\n", backendIndex)
 
-	a.SRegistry.GetByIndex(backendIndex).
-		proxy.
-		ServeHTTP(w, r)
+	backend := a.SRegistry.GetByIndex(backendIndex)
+	backend.proxy.ServeHTTP(w, r)
 }

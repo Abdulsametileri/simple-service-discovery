@@ -1,6 +1,6 @@
 module github.com/Abdulsametileri/basic-service-discovery
 
-go 1.17
+go 1.18
 
 require github.com/docker/docker v20.10.16+incompatible
 
